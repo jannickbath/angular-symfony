@@ -1,0 +1,53 @@
+version: '3.8'
+services:
+  mysql:
+    image: 'mysql:8.0'
+    restart: unless-stopped
+    container_name: db_solution_mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=opwer384
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - db_solution_net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  adminer:
+    image: adminer
+    container_name: db_solution_adminer
+    restart: unless-stopped
+    ports:
+      - 9999:8080
+    networks:
+      - db_solution_net
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  symfony:
+    image: testimage
+    ports:
+      - 8001:8000
+    volumes:
+      - ./backend/db-solution:/project
+    networks:
+      - db_solution_net
+
+  angular:
+    image: angular
+    ports:
+      - 4200:4200
+    volumes:
+      - ./frontend/db-solution:/project
+    networks:
+      - db_solution_net
+
+networks:
+  db_solution_net:
+
+volumes:
+  db_data:
