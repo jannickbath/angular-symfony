@@ -33,7 +33,7 @@ services:
     ports:
       - 8001:8000 
     volumes:
-      - ../backend/db-solution:/project
+      - ../backend:/project
     networks:
       - db_solution_net
 
@@ -42,7 +42,7 @@ services:
     ports:
       - 4200:4200
     volumes:
-      - ../frontend/db-solution:/project
+      - ../frontend:/project
     networks:
       - db_solution_net
 
