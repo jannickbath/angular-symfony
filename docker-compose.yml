@@ -22,8 +22,19 @@ services:
     restart: unless-stopped
     ports:
       - 9999:8080
+    labels:
+      - "traefik.enable=true"
+
+      - 'traefik.http.routers.adminerhttp-db.entrypoints=web'
+      - 'traefik.http.routers.adminerhttp-db.rule=Host(`adminer-db.loc`)'
+
+      - "traefik.http.routers.adminer-db.rule=Host(`adminer-db.loc`)"
+      - "traefik.http.routers.adminer-db.entrypoints=websecure"
+      - "traefik.http.routers.adminer-db.tls=true"
+      - "traefik.http.services.adminer-db.loadbalancer.server.port=8080" 
     networks:
       - db_solution_net
+      - traefik_net
     depends_on:
       mysql:
         condition: service_healthy
@@ -34,8 +45,19 @@ services:
       - 8001:8000 
     volumes:
       - ../backend:/project
+    labels:
+      - "traefik.enable=true"
+
+      - 'traefik.http.routers.nutzerdatenbank-backend-http.entrypoints=web'
+      - 'traefik.http.routers.nutzerdatenbank-backend-http.rule=Host(`nutzerdatenbank-backend.loc`)'
+
+      - "traefik.http.routers.nutzerdatenbank-backend.rule=Host(`nutzerdatenbank-backend.loc`)"
+      - "traefik.http.routers.nutzerdatenbank-backend.entrypoints=websecure"
+      - "traefik.http.routers.nutzerdatenbank-backend.tls=true"
+      - "traefik.http.services.nutzerdatenbank-backend.loadbalancer.server.port=8000"
     networks:
       - db_solution_net
+      - traefik_net
 
   angular:
     image: angular
@@ -43,11 +65,25 @@ services:
       - 4200:4200
     volumes:
       - ../frontend:/project
+    labels:
+      - "traefik.enable=true"
+
+      - 'traefik.http.routers.nutzerdatenbank-frontend-http.entrypoints=web'
+      - 'traefik.http.routers.nutzerdatenbank-frontend-http.rule=Host(`nutzerdatenbank-frontend.loc`)'
+
+      - "traefik.http.routers.nutzerdatenbank-frontend.rule=Host(`nutzerdatenbank-frontend.loc`)"
+      - "traefik.http.routers.nutzerdatenbank-frontend.entrypoints=websecure"
+      - "traefik.http.routers.nutzerdatenbank-frontend.tls=true"
+      - "traefik.http.services.nutzerdatenbank-frontend.loadbalancer.server.port=4200"
     networks:
       - db_solution_net
+      - traefik_net
 
 networks:
+  traefik_net:
+    external: true
   db_solution_net:
+    external: false
 
 volumes:
   db_data:
